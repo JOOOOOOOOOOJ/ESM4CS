@@ -11,6 +11,7 @@ from esm.esmfold.v1.build_info import ATOM_MAP_H, BB_BUILD_INFO, NUM_COORDS_PER_
 from esm.esmfold.v1.build_info import GLOBAL_PAD_CHAR
 # from sequence import ONE_TO_THREE_LETTER_MAP
 import pickle
+import pkg_resources
 
 #JO: From structure.py
 def coord_generator(coords, remove_padding=False, seq=""):
@@ -54,7 +55,8 @@ AA = [
 ]
 AA2NUM = {a: i for i, a in enumerate(AA)}
 
-with open("build_params.pkl", "rb") as f:
+with open(pkg_resources.resource_filename("esm.esmfold.v1", "build_params.pkl"),
+          "rb") as f:
     SC_ALL_ATOM_BUILD_PARAMS = pickle.load(f)
 
 # Optional numba support, uncomment @njit headers below
