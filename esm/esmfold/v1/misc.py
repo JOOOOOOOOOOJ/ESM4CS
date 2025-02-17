@@ -14,7 +14,7 @@ from openfold.np.protein import Protein as OFProtein
 from openfold.np.protein import to_pdb
 from openfold.np import residue_constants
 from openfold.utils.feats import atom14_to_atom37
-# from HydrogenBuilder import HydrogenBuilder
+from HydrogenBuilder import HydrogenBuilder
 
 def encode_sequence(
     seq: str,
@@ -100,39 +100,45 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
     """Returns the pbd (file) string from the model given the model output."""
     # atom14_to_atom37 must be called first, as it fails on latest numpy if the
     # input is a numpy array. It will work if the input is a torch tensor.
-    output = {k: v.to("cpu").numpy() for k, v in output.items()}
-    print("before transformation to atom37",output["positions"])
-    print("before transformation to atom37, the last dimention",output["positions"][-1])
-    final_atom_positions = atom14_to_atom37(output["positions"][-1], output)
+    # final_atom_positions = atom14_to_atom37(output["positions"][-1], output)
+    #JO: atom14 is the style PDB uses, 37 is the style AlphaFold uses
+    final_atom_positions = output["positions"][-1]
+    final_atom_positions = final_atom_positions.squeeze(0)
+    L = final_atom_positions.shape[0]
+    new_column = torch.zeros(L, 1, 3)
+    part1 = final_atom_positions[:, :4, :]  # (L, 4, 3) 
+    part2 = final_atom_positions[:, 4:, :]  # (L, 10, 3) 
+    atom_position_before_hydro = torch.cat([part1, new_column, part2], dim=1)
     #JO: Put all the items to numpy, cancel.
     # output = {k: v.to("cpu").numpy() for k, v in output.items()}
-    final_atom_positions = final_atom_positions.cpu().numpy()
-    final_atom_mask = output["atom37_atom_exists"]
-    # device_use = output["aligned_confidence_probs"].device
+    # final_atom_positions = final_atom_positions.cpu().numpy()
+    # final_atom_mask = output["atom37_atom_exists"]
+    device_use = output["aligned_confidence_probs"].device
     #JO: Use Openfold functions
-    # restypes = residue_constants.restypes + ["X"]
-    # aatype = output["aatype"].squeeze(0)  # 适用于 torch.Tensor 和 numpy.ndarray
-    # aa_seq = "".join([restypes[idx] for idx in aatype])
-    # coord_h = HydrogenBuilder(aa_seq, final_atom_positions, device=device_use)
-    pdbs = []
-    print("output[aatype]",output["aatype"])
-    print("output[residue_index]",output["residue_index"])
-    # print("final_atom_positions",final_atom_positions.shape())
-    for i in range(output["aatype"].shape[0]):
-        aa = output["aatype"][i]
-        pred_pos = final_atom_positions[i]
-        mask = final_atom_mask[i]
-        resid = output["residue_index"][i] + 1
-        pred = OFProtein(
-            aatype=aa,
-            atom_positions=pred_pos,
-            atom_mask=mask,
-            residue_index=resid,
-            b_factors=output["plddt"][i],
-            chain_index=output["chain_index"][i] if "chain_index" in output else None,
-        )
-        pdbs.append(to_pdb(pred))
-    return pdbs
+    restypes = residue_constants.restypes + ["X"]
+    aatype = output["aatype"].squeeze(0)  # 适用于 torch.Tensor 和 numpy.ndarray
+    aa_seq = "".join([restypes[idx] for idx in aatype])
+    coord_h = HydrogenBuilder(aa_seq, atom_position_before_hydro, device=device_use)
+    atom_position_after_hydrogen = coord_h.build_hydrogens()
+    # pdbs = []
+    # print("output[aatype]",output["aatype"])
+    # print("output[residue_index]",output["residue_index"])
+    # print("final_atom_positions",final_atom_positions)
+    # for i in range(output["aatype"].shape[0]):
+    #     aa = output["aatype"][i]
+    #     pred_pos = final_atom_positions[i]
+    #     mask = final_atom_mask[i]
+    #     resid = output["residue_index"][i] + 1
+    #     pred = OFProtein(
+    #         aatype=aa,
+    #         atom_positions=pred_pos,
+    #         atom_mask=mask,
+    #         residue_index=resid,
+    #         b_factors=output["plddt"][i],
+    #         chain_index=output["chain_index"][i] if "chain_index" in output else None,
+    #     )
+    #     pdbs.append(to_pdb(pred))
+    return atom_position_after_hydrogen
 
 #JO: try to stack the tensors in the sample list into a single tensor, also make sure they are the same shape
 def collate_dense_tensors(
