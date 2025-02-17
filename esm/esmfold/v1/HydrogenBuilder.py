@@ -5,10 +5,10 @@ import numpy as np
 import torch
 #JO: Tune the package
 # from sidechainnet.structure.build_info import ATOM_MAP_H, BB_BUILD_INFO, NUM_COORDS_PER_RES_W_HYDROGENS
-from build_info import ATOM_MAP_H, BB_BUILD_INFO, NUM_COORDS_PER_RES_W_HYDROGENS
+from esm.esmfold.v1.build_info import ATOM_MAP_H, BB_BUILD_INFO, NUM_COORDS_PER_RES_W_HYDROGENS
 #JO: Directly copy here, no other dependencies
 # from sidechainnet.structure.structure import coord_generator
-from build_info import GLOBAL_PAD_CHAR
+from esm.esmfold.v1.build_info import GLOBAL_PAD_CHAR
 # from sequence import ONE_TO_THREE_LETTER_MAP
 import pickle
 
