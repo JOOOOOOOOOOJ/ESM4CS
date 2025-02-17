@@ -113,7 +113,7 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
     # aatype = output["aatype"].squeeze(0)  # 适用于 torch.Tensor 和 numpy.ndarray
     # aa_seq = "".join([restypes[idx] for idx in aatype])
     # coord_h = HydrogenBuilder(aa_seq, final_atom_positions, device=device_use)
-    # pdbs = []
+    pdbs = []
     print("output[aatype]",output["aatype"])
     print("output[residue_index]",output["residue_index"])
     print("final_atom_positions",final_atom_positions.shape())
