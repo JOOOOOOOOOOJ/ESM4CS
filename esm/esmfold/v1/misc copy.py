@@ -14,7 +14,7 @@ from openfold.np.protein import Protein as OFProtein
 from openfold.np.protein import to_pdb
 from openfold.np import residue_constants
 from openfold.utils.feats import atom14_to_atom37
-from HydrogenBuilder import HydrogenBuilder
+# from HydrogenBuilder import HydrogenBuilder
 
 def encode_sequence(
     seq: str,
