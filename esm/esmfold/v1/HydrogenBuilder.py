@@ -55,7 +55,7 @@ AA = [
 ]
 AA2NUM = {a: i for i, a in enumerate(AA)}
 
-with open(pkg_resources.resource_filename("esm.esmfold.v1", "build_params.pkl"),
+with open(pkg_resources.resource_filename("esm", "esmfold/v1/build_params.pkl"),
           "rb") as f:
     SC_ALL_ATOM_BUILD_PARAMS = pickle.load(f)
 

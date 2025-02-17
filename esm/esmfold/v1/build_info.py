@@ -907,7 +907,7 @@ def _create_atomname_lookup():
     #JO:
     # amino12 = pkg_resources.resource_filename("sidechainnet",
     #                                           "resources/amino12.lib")
-    amino12_path = pkg_resources.resource_filename("esm.esmfold.v1", "amino12.lib")
+    amino12_path = pkg_resources.resource_filename("esm", "esmfold/v1/amino12.lib")
     with open(amino12_path, "r") as f:
         text = f.read()
     atom_name_lookup = {}
@@ -1005,8 +1005,8 @@ def create_complete_hydrogen_build_info_dict():
     atom_type_map = _create_atomname_lookup()
 
     # We also make ready a way to lookup forcefield parameter values from raw files
-    frcmod = pkg_resources.resource_filename("esm.esmfold.v1", "frcmod.ff14SB")
-    parm10 = pkg_resources.resource_filename("esm.esmfold.v1", "parm10.dat")
+    frcmod = pkg_resources.resource_filename("esm", "esmfold/v1/frcmod.ff14SB")
+    parm10 = pkg_resources.resource_filename("esm", "esmfold/v1/parm10.dat")
     ff_helper = ForceFieldLookupHelper(frcmod, parm10)
 
     # Now, let's generate the types of the bonds and angles we will need to lookup
@@ -1473,7 +1473,7 @@ if __name__ == "__main__":
     # hbp_str = pprint.pformat(hbp, indent=1, width=90, compact=False)
     #JO: tune the package
 
-    with open(pkg_resources.resource_filename("esm.esmfold.v1", "build_params.pkl"),
+    with open(pkg_resources.resource_filename("esm", "esmfold/v1/build_params.pkl"),
           "rb") as f:
         SC_ALL_ATOM_BUILD_PARAMS = pickle.load(f)
     torch.set_printoptions(threshold=10000)
