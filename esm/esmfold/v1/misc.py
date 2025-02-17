@@ -100,11 +100,12 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
     """Returns the pbd (file) string from the model given the model output."""
     # atom14_to_atom37 must be called first, as it fails on latest numpy if the
     # input is a numpy array. It will work if the input is a torch tensor.
+    output = {k: v.to("cpu").numpy() for k, v in output.items()}
     print("before transformation to atom37",output["positions"])
     print("before transformation to atom37, the last dimention",output["positions"][-1])
     final_atom_positions = atom14_to_atom37(output["positions"][-1], output)
     #JO: Put all the items to numpy, cancel.
-    output = {k: v.to("cpu").numpy() for k, v in output.items()}
+    # output = {k: v.to("cpu").numpy() for k, v in output.items()}
     final_atom_positions = final_atom_positions.cpu().numpy()
     final_atom_mask = output["atom37_atom_exists"]
     # device_use = output["aligned_confidence_probs"].device
@@ -116,7 +117,7 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
     pdbs = []
     print("output[aatype]",output["aatype"])
     print("output[residue_index]",output["residue_index"])
-    print("final_atom_positions",final_atom_positions.shape())
+    # print("final_atom_positions",final_atom_positions.shape())
     for i in range(output["aatype"].shape[0]):
         aa = output["aatype"][i]
         pred_pos = final_atom_positions[i]
