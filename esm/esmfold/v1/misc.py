@@ -3,7 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 import typing as T
-
+import sys
+import os
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -14,6 +15,7 @@ from openfold.np.protein import Protein as OFProtein
 from openfold.np.protein import to_pdb
 from openfold.np import residue_constants
 from openfold.utils.feats import atom14_to_atom37
+sys.path.append(os.getcwd())  # 添加当前目录到 sys.path
 from HydrogenBuilder import HydrogenBuilder
 
 def encode_sequence(
