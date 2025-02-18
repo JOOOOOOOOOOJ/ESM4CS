@@ -5,7 +5,7 @@ import numpy as np
 import torch
 #JO: Tune the package
 # from sidechainnet.structure.build_info import ATOM_MAP_H, BB_BUILD_INFO, NUM_COORDS_PER_RES_W_HYDROGENS
-from esm.esmfold.v1.build_info import ATOM_MAP_H, BB_BUILD_INFO, NUM_COORDS_PER_RES_W_HYDROGENS
+from esm.esmfold.v1.build_info import ATOM_MAP_H, BB_BUILD_INFO, NUM_COORDS_PER_RES_W_HYDROGENS, ATOM_MAP_HEAVY
 #JO: Directly copy here, no other dependencies
 # from sidechainnet.structure.structure import coord_generator
 from esm.esmfold.v1.build_info import GLOBAL_PAD_CHAR
@@ -177,7 +177,7 @@ class HydrogenBuilder(object):
             coords (numpy.ndarray, torch.tensor): Coordinate set for a protein that does
                 not yet contain Hydrogens.
         """
-        from sidechainnet.structure.PdbBuilder import ATOM_MAP_HEAVY
+        # from sidechainnet.structure.PdbBuilder import ATOM_MAP_HEAVY
 
         self.seq = seq
         self.coords = coords
