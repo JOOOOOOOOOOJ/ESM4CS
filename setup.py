@@ -35,6 +35,15 @@ setup(
     url="https://github.com/facebookresearch/esm",
     license="MIT",
     packages=["esm", "esm/model", "esm/inverse_folding", "esm/esmfold/v1"],
+    #JO: added for hydrogen addition
+    package_data={
+        "esm": [
+            "esmfold/v1/*.lib",  # 确保 amino12.lib 被包含
+            "esmfold/v1/*.pkl",  # 以防其他非 Python 文件丢失
+            "esmfold/v1/*.dat",
+            "esmfold/v1/*.ff14SB",
+        ]
+    },
     extras_require=extras,
     data_files=[("source_docs/esm", ["LICENSE", "README.md", "CODE_OF_CONDUCT.rst"])],
     zip_safe=True,
