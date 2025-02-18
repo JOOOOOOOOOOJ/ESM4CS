@@ -364,6 +364,9 @@ class HydrogenBuilder(object):
 
         # Place first hydrogen
         ROT1, ROT2 = self.M(axis, self.methylene_angle, posneg=True)
+        ROT1 = ROT1.double()
+        ROT2 = ROT2.double()
+        PV = PV.double()
         H1 = self.dot(ROT1, PV)
         vector_len = self.norm(H1)
         H1 = _scale_l(vector=H1, target_len=self.methylene_len, v_len=vector_len)
@@ -401,6 +404,8 @@ class HydrogenBuilder(object):
         RP = self.M(PV, self.thiol_rot)
 
         # Define Hydrogens
+        RP = RP.double()
+        OS = OS.double()
         H1 = self.dot(RP, OS)  # Rotate by tetrahedral angle only
         H1 = self.scale(H1, length)
         H1 += OS
@@ -425,6 +430,8 @@ class HydrogenBuilder(object):
 
         # Place first hydrogen
         R = self.M(PV, -self.amine_angle)  # Rotate around perpendicular axis
+        R = R.double()
+        N = N.double()
         H1 = self.dot(R, -N)
         vector_len = self.norm(H1)
         H1 = _scale_l(vector=H1, target_len=self.amine_len, v_len=vector_len)
