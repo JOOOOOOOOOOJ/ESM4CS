@@ -101,10 +101,11 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
     # input is a numpy array. It will work if the input is a torch tensor.
     # final_atom_positions = atom14_to_atom37(output["positions"][-1], output)
     #JO: atom14 is the style PDB uses, 37 is the style AlphaFold uses
+    device_use = output["aligned_confidence_probs"].device
     final_atom_positions = output["positions"][-1]
     final_atom_positions = final_atom_positions.squeeze(0)
     L = final_atom_positions.shape[0]
-    new_column = torch.zeros(L, 1, 3)
+    new_column = torch.zeros(L, 1, 3).to(final_atom_positions.device)
     part1 = final_atom_positions[:, :4, :]  # (L, 4, 3) 
     part2 = final_atom_positions[:, 4:, :]  # (L, 10, 3) 
     atom_position_before_hydro = torch.cat([part1, new_column, part2], dim=1)
@@ -112,7 +113,6 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
     # output = {k: v.to("cpu").numpy() for k, v in output.items()}
     # final_atom_positions = final_atom_positions.cpu().numpy()
     # final_atom_mask = output["atom37_atom_exists"]
-    device_use = output["aligned_confidence_probs"].device
     #JO: Use Openfold functions
     restypes = residue_constants.restypes + ["X"]
     aatype = output["aatype"].squeeze(0)  # 适用于 torch.Tensor 和 numpy.ndarray
