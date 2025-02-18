@@ -318,6 +318,8 @@ class HydrogenBuilder(object):
         R109 = self.M(PV, self.methyl_angle)  # Rotate abt PV by 109.5 (tetrahed.)
 
         # Define Hydrogen extending from carbon
+        CB = CB.float()  # Make style consistent
+        R109 = R109.float()  
         H1 = self.dot(R109, -CB)  # Place Hydrogen by rotating C along perpendicular axis
         H1 = self.scale(H1, length)
 
