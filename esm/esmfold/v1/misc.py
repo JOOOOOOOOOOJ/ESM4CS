@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+import os
 import typing as T
 import numpy as np
 import torch
@@ -14,6 +15,7 @@ from openfold.np.protein import to_pdb
 from openfold.np import residue_constants
 from openfold.utils.feats import atom14_to_atom37
 from esm.esmfold.v1.HydrogenBuilder import HydrogenBuilder
+from esm.esmfold.v1.legolas import EntryPDB, ChemicalShiftPredictor
 
 def encode_sequence(
     seq: str,
@@ -119,24 +121,26 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
     aa_seq = "".join([restypes[idx] for idx in aatype])
     coord_h = HydrogenBuilder(aa_seq, atom_position_before_hydro, device=device_use)
     atom_position_after_hydrogen = coord_h.build_hydrogens()
-    # pdbs = []
-    # print("output[aatype]",output["aatype"])
-    # print("output[residue_index]",output["residue_index"])
-    # print("final_atom_positions",final_atom_positions)
-    # for i in range(output["aatype"].shape[0]):
-    #     aa = output["aatype"][i]
-    #     pred_pos = final_atom_positions[i]
-    #     mask = final_atom_mask[i]
-    #     resid = output["residue_index"][i] + 1
-    #     pred = OFProtein(
-    #         aatype=aa,
-    #         atom_positions=pred_pos,
-    #         atom_mask=mask,
-    #         residue_index=resid,
-    #         b_factors=output["plddt"][i],
-    #         chain_index=output["chain_index"][i] if "chain_index" in output else None,
-    #     )
-    #     pdbs.append(to_pdb(pred))
+
+    #Legolas
+    NUM_MODELS = 5
+
+    interested_atypes = ["N"]
+    # Get the directory where models reside
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+
+    # Define paths relative to the script's directory
+    model_paths = {}
+    for atype in interested_atypes:
+        model_paths[atype] = [
+            os.path.join(script_dir, "ens_models", f"ens_model_{i+1}_{atype}.pt") for i in range(NUM_MODELS)
+        ]
+
+    entry = EntryPDB(aa_seq, atom_position_after_hydrogen)
+    model = ChemicalShiftPredictor(model_paths).to(device_use)
+    df = model(entry, 10)
+    print(df)
+
     return atom_position_before_hydro, atom_position_after_hydrogen
 
 #JO: try to stack the tensors in the sample list into a single tensor, also make sure they are the same shape

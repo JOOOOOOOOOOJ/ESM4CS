@@ -42,6 +42,7 @@ setup(
             "esmfold/v1/*.pkl",  # 以防其他非 Python 文件丢失
             "esmfold/v1/*.dat",
             "esmfold/v1/*.ff14SB",
+            "esmfold/v1/ens_models/*.pt",
         ]
     },
     extras_require=extras,
